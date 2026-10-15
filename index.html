@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>愛之階梯：七大罪與七美德心理測驗</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #0b0c10;
+      color: #e5e7eb;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(120, 53, 15, 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 85% 90%, rgba(88, 28, 135, 0.15) 0%, transparent 50%);
+      min-height: 100vh;
+    }
+    .serif {
+      font-family: 'Noto Serif TC', serif;
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #fef08a 0%, #d97706 50%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card-glass {
+      background: rgba(17, 24, 39, 0.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(217, 119, 6, 0.25);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .option-btn {
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(75, 85, 99, 0.4);
+    }
+    .option-btn:hover {
+      border-color: rgba(245, 158, 11, 0.7);
+      background: rgba(245, 158, 11, 0.08);
+      transform: translateY(-2px);
+    }
+    .option-btn.selected {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.18);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.25);
+    }
+    .step-bar {
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  </style>
+</head>
+<body class="py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+
+  <!-- Top Navigation / Settings Bar -->
+  <header class="w-full max-w-4xl flex flex-wrap justify-between items-center mb-6 gap-3 text-xs sm:text-sm text-gray-400 border-b border-gray-800 pb-4">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+      <span class="serif font-bold tracking-wider text-amber-400 text-base">煉獄階梯：愛與背離</span>
+      <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">組別 1 實裝版 (T=8)</span>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <label class="flex items-center gap-1.5 cursor-pointer bg-gray-900/90 px-3 py-1.5 rounded-lg border border-gray-700 hover:border-amber-500/50 transition">
+        <input type="checkbox" id="shuffleToggle" checked class="accent-amber-500 rounded cursor-pointer">
+        <span>隨機打亂題號與選項</span>
+      </label>
+      <label class="flex items-center gap-1.5 bg-gray-900/90 px-3 py-1.5 rounded-lg border border-gray-700">
+        <span>美德對應：</span>
+        <select id="mappingModeSelect" onchange="updateMappingMode()" class="bg-transparent text-amber-400 font-medium focus:outline-none cursor-pointer">
+          <option value="A" class="bg-gray-900 text-gray-200">做法A：傳統相反美德</option>
+          <option value="B" class="bg-gray-900 text-gray-200">做法B：十四級階梯鏡像</option>
+        </select>
+      </label>
+      <button onclick="toggleInspector()" class="px-3 py-1.5 rounded-lg bg-indigo-950/70 text-indigo-300 border border-indigo-700/50 hover:bg-indigo-900/60 transition">
+        📊 題庫驗證器
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-3xl">
+
+    <!-- 1. START SCREEN -->
+    <section id="startScreen" class="card-glass rounded-2xl p-6 sm:p-10 text-center relative overflow-hidden">
+      <div class="mb-3 text-amber-500/80 tracking-[0.3em] text-xs uppercase font-semibold">Seven Deadly Sins &amp; Seven Virtues</div>
+      <h1 class="serif text-3xl sm:text-4xl font-black gold-gradient mb-4 tracking-wide">
+        愛之階梯：靈魂傾向探索
+      </h1>
+      <p class="text-gray-300 text-sm sm:text-base leading-relaxed max-w-xl mx-auto mb-8">
+        在但丁《神曲》與傳統神學的十四級階梯中，「愛」位於萬物的頂端，而「七大罪」則是對愛的不同程度背離——或扭曲、或匱乏、或過度。<br><br>
+        請憑直覺回答以下 <strong class="text-amber-400">7 道情境與價值觀提問</strong>，探索你在關係與自我中的潛在傾向。
+      </p>
+
+      <!-- Disclaimer Box -->
+      <div class="bg-gray-950/70 border border-gray-800 rounded-xl p-4 text-left text-xs text-gray-400 mb-8 max-w-xl mx-auto space-y-1.5">
+        <div class="text-amber-400/90 font-semibold flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          測驗性質與免責聲明
+        </div>
+        <p>• 本測驗屬於<strong>娛樂與自我探索性質</strong>，並非臨床心理學或精神醫學診斷工具。</p>
+        <p>• 測驗採「固定總和計分制（零和模型）」，結果呈現的是各維度的<strong>相對分配傾向</strong>而非絕對嚴重程度，僅供自我覺察與趣味討論。</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="startQuiz()" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-gray-950 font-bold text-base shadow-lg shadow-amber-900/30 transition transform hover:-translate-y-0.5">
+          開始踏上階梯（共 7 題）
+        </button>
+        <button onclick="simulateRandomQuiz()" class="px-5 py-3.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium border border-gray-700 transition">
+          🎲 快速隨機作答（測試結果頁）
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. QUIZ SCREEN -->
+    <section id="quizScreen" class="hidden card-glass rounded-2xl p-6 sm:p-10">
+      <!-- Progress Header -->
+      <div class="flex justify-between items-center mb-3 text-xs sm:text-sm text-gray-400">
+        <span id="questionGroupBadge" class="px-2.5 py-1 rounded bg-amber-950/60 border border-amber-700/40 text-amber-300 font-medium">
+          第 1 / 7 題
+        </span>
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs text-gray-400 hover:text-gray-200">
+          <input type="checkbox" id="debugScoreToggle" onchange="renderCurrentQuestion()" class="accent-amber-500">
+          <span>顯示選項後台配分 (除錯模式)</span>
+        </label>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden mb-7">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-amber-600 to-yellow-400 transition-all duration-300" style="width: 14.28%"></div>
+      </div>
+
+      <!-- Question Title -->
+      <h2 id="questionText" class="serif text-xl sm:text-2xl font-bold text-gray-100 leading-snug mb-6 min-h-[3.5rem]">
+        題目載入中...
+      </h2>
+
+      <!-- Options List -->
+      <div id="optionsContainer" class="space-y-3.5 mb-8"></div>
+
+      <!-- Navigation Footer -->
+      <div class="flex justify-between items-center pt-4 border-t border-gray-800">
+        <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition disabled:opacity-30 disabled:pointer-events-none">
+          ← 上一題
+        </button>
+        <span class="text-xs text-gray-500">點擊選項即可自動或手動前往下一題</span>
+        <button id="nextBtn" onclick="nextQuestion()" class="px-6 py-2.5 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-gray-950 transition disabled:opacity-30 disabled:pointer-events-none">
+          下一題 →
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. RESULT SCREEN -->
+    <section id="resultScreen" class="hidden space-y-6">
+      <!-- Primary Result Card -->
+      <div class="card-glass rounded-2xl p-6 sm:p-10 border-t-4 border-t-amber-500">
+        <div class="text-center mb-6">
+          <div class="text-xs uppercase tracking-[0.25em] text-amber-400 mb-1">測驗結果剖析</div>
+          <h2 class="serif text-2xl sm:text-3xl font-bold text-white">你的靈魂傾向與愛之階梯</h2>
+        </div>
+
+        <!-- Highest Sin(s) Banner -->
+        <div class="bg-gradient-to-br from-red-950/60 via-gray-900 to-gray-900 border border-red-500/40 rounded-2xl p-6 mb-6 shadow-inner">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+              主要突出傾向（最高分罪行）
+            </span>
+            <span id="topSinScoreBadge" class="text-sm font-mono text-red-300 font-semibold"></span>
+          </div>
+          <div id="topSinTitle" class="serif text-3xl sm:text-4xl font-black text-red-400 mb-3"></div>
+          <div id="topSinDescriptions" class="space-y-4 text-sm sm:text-base text-gray-200 leading-relaxed"></div>
+        </div>
+
+        <!-- Lowest Sin / Corresponding Virtue(s) Banner -->
+        <div class="bg-gradient-to-br from-emerald-950/50 via-gray-900 to-gray-900 border border-emerald-500/30 rounded-2xl p-6 mb-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              相對守護美德（最低分罪行映射）
+            </span>
+            <span id="lowestSinScoreBadge" class="text-xs font-mono text-emerald-300"></span>
+          </div>
+          <div id="virtueTitle" class="serif text-2xl font-bold text-emerald-300 mb-2"></div>
+          <p id="virtueDescription" class="text-sm text-gray-300 leading-relaxed"></p>
+        </div>
+
+        <!-- Departure Index Meter -->
+        <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-5 mb-6">
+          <div class="flex flex-wrap justify-between items-baseline gap-2 mb-2">
+            <div>
+              <h3 class="font-bold text-amber-400 text-base">整體背離指數（Departure Index）</h3>
+              <p class="text-xs text-gray-400">依七罪階梯權重（色慾 1 → 傲慢 7）加權標準化，衡量分數往階梯下段集中的程度</p>
+            </div>
+            <div class="text-right">
+              <span id="departureIndexValue" class="serif text-3xl font-black text-amber-400">0.0</span>
+              <span class="text-xs text-gray-400"> / 100</span>
+            </div>
+          </div>
+          <div class="w-full h-3 bg-gray-800 rounded-full overflow-hidden my-3 p-0.5">
+            <div id="departureBar" class="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-500 to-red-600 transition-all duration-700" style="width: 50%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-gray-500">
+            <span>0（完全集中於上層：色慾）</span>
+            <span id="rawWeightedInfo" class="text-gray-400 font-mono"></span>
+            <span>100（完全集中於底層：傲慢）</span>
+          </div>
+        </div>
+
+        <!-- 14-Step Vertical Ladder Profile -->
+        <div class="bg-gray-950/80 border border-gray-800 rounded-2xl p-5 sm:p-6">
+          <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+            <div>
+              <h3 class="serif text-lg font-bold text-white">十四級階梯直式剖面圖</h3>
+              <p class="text-xs text-gray-400">由頂端「愛」往下至底端「傲慢」（受試者總分恆為 N×T = 56 分，隨機期望值 = 8 分）</p>
+            </div>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block"></span>最高突出罪行</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-400 inline-block"></span>相對美德(最低罪)</span>
+            </div>
+          </div>
+
+          <div id="ladderContainer" class="space-y-1.5"></div>
+        </div>
+
+        <!-- Answer Review Accordion -->
+        <details class="mt-6 bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+          <summary class="cursor-pointer text-sm font-medium text-gray-300 hover:text-amber-400 select-none">
+            🔍 展開檢視你的各題作答明細與得分計算
+          </summary>
+          <div id="answerReviewList" class="mt-4 space-y-3 text-xs text-gray-300 border-t border-gray-800 pt-4"></div>
+        </details>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+          <button onclick="restartQuiz()" class="px-7 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-sm transition shadow-lg shadow-amber-900/20">
+            ↻ 重新測驗
+          </button>
+          <button onclick="simulateRandomQuiz()" class="px-5 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-sm border border-gray-700 transition">
+            🎲 隨機模擬另一組結果
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. QUESTION BANK INSPECTOR MODAL / PANEL -->
+    <section id="inspectorPanel" class="hidden mt-6 card-glass rounded-2xl p-6 sm:p-8 border border-indigo-500/40">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="serif text-xl font-bold text-indigo-300">題庫配分自動驗證器（組別 1）</h3>
+          <p class="text-xs text-gray-400">自動檢查「每選項總和是否皆為 T=8」以及「全組 28 個選項在七罪的題庫總分是否皆為 32 分」</p>
+        </div>
+        <button onclick="toggleInspector()" class="text-gray-400 hover:text-white text-sm px-3 py-1 rounded bg-gray-800">關閉 ✕</button>
+      </div>
+      <div id="inspectorSummary" class="mb-4"></div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-gray-700 text-gray-400 bg-gray-900/80">
+              <th class="p-2">組-題-選項</th>
+              <th class="p-2">選項內容摘要</th>
+              <th class="p-2 text-center">色慾</th>
+              <th class="p-2 text-center">暴食</th>
+              <th class="p-2 text-center">貪婪</th>
+              <th class="p-2 text-center">怠惰</th>
+              <th class="p-2 text-center">憤怒</th>
+              <th class="p-2 text-center">嫉妒</th>
+              <th class="p-2 text-center">傲慢</th>
+              <th class="p-2 text-center font-bold text-amber-400">總分(T)</th>
+            </tr>
+          </thead>
+          <tbody id="inspectorTableBody" class="divide-y divide-gray-800/70"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="mt-10 text-center text-xs text-gray-600 pb-6">
+    七大罪與七美德心理測驗原型系統 • 支援單罪與並列最高罪行自動判定
+  </footer>
+
+  <script>
+    // ==========================================
+    // 1. 基本定義與題庫資料 (組別 1：7 題，T = 8)
+    // ==========================================
+    const SIN_KEYS = ['lust', 'gluttony', 'greed', 'sloth', 'wrath', 'envy', 'pride'];
+
+    const SIN_INFO = {
+      lust: {
+        key: 'lust',
+        name: '色慾',
+        en: 'Lust',
+        weight: 1,
+        ladderRank: 8,
+        virtueA: { name: '貞潔', desc: '能以純粹、尊重且不物化的方式看待親密關係，不被一時的感官衝動或迷戀綁架。' },
+        virtueB: { name: '節制（樞德）', desc: '在慾望與情感的洪流中保有適度與平衡，知道如何安頓身心的渴求。' },
+        tendencyDesc: '你在關係與生命選擇中，特別重視強烈的情感連結、感官吸引或浪漫的峰值體驗。你容易被充滿魅力的人事物深深吸引，渴望全然的親密與投入；但有時也可能因為過度追求「愛與被愛的感覺」，而忽略了現實層面的界線與長遠基礎。'
+      },
+      gluttony: {
+        key: 'gluttony',
+        name: '暴食',
+        en: 'Gluttony',
+        weight: 2,
+        ladderRank: 9,
+        virtueA: { name: '節制', desc: '懂得適可而止的智慧，不需依賴外在感官或關係的過度填塞來獲得安全感。' },
+        virtueB: { name: '勇敢（樞德）', desc: '具備面對內在空虛與未知的勇氣，不需藉由即時的享樂來逃避挑戰。' },
+        tendencyDesc: '你傾向重視當下的快樂、舒適感與世俗生活中的實質陪伴。比起抽象遙遠的精神教條，你更相信「能一起吃飯、一起開心過日子」的溫度；然而當壓力或不安來臨時，也較容易傾向尋求立即的感官滿足或安逸，來填補內心的空缺。'
+      },
+      greed: {
+        key: 'greed',
+        name: '貪婪',
+        en: 'Greed',
+        weight: 3,
+        ladderRank: 10,
+        virtueA: { name: '慷慨（愛德）', desc: '願意在關係中分享與付出，不將情感或資源視為零和博弈的籌碼。' },
+        virtueB: { name: '正義（樞德）', desc: '能客觀衡量彼此的界線與應得之份，在自我利益與他人福祉間維持公允。' },
+        tendencyDesc: '你在面對關係與人生決策時，有著清晰的價值衡量與資源意識。你重視付出的回報率、未來的保障以及實際握在手中的理想或利益；這讓你不易盲目犧牲，但有時也可能讓你不自覺地在感情裡計算得失，害怕失去掌控或吃虧。'
+      },
+      sloth: {
+        key: 'sloth',
+        name: '怠惰',
+        en: 'Sloth',
+        weight: 4,
+        ladderRank: 11,
+        virtueA: { name: '勤勉', desc: '願意為了珍視的關係與理想付出心力經營，在困難面前不輕言放棄或冷漠抽離。' },
+        virtueB: { name: '明智（樞德）', desc: '能清明地辨識真正重要的人事物，並採取適切的行動回應生命。' },
+        tendencyDesc: '你面對複雜的人際糾葛或高張力的情感衝突時，常展現出一種「抽離、省事或順其自然」的防衛機制。你討厭無謂的麻煩與情緒內耗，有時會用看破紅塵或自嘲來避開深度的磨合；這雖然保護了你的平靜，卻也可能讓你錯失深刻連結的契機。'
+      },
+      wrath: {
+        key: 'wrath',
+        name: '憤怒',
+        en: 'Wrath',
+        weight: 5,
+        ladderRank: 12,
+        virtueA: { name: '耐心', desc: '面對觀念落差或他人過失時，能保持溫和與寬容，不輕易被情緒點燃。' },
+        virtueB: { name: '信（神學美德）', desc: '對人性與關係抱持基本的信任與信念，不因一時的背叛或摩擦而全面否定。' },
+        tendencyDesc: '你對於是非對錯、個人界線與溝通頻率有著極高的敏銳度與標準。當遭遇不公、愚昧或越界的要求時，你會直接展現出強烈的排斥與批判力；你的愛恨分明讓你保有真實的稜角，但過於鋒利的防衛有時也會在無意間灼傷身邊的人。'
+      },
+      envy: {
+        key: 'envy',
+        name: '嫉妒',
+        en: 'Envy',
+        weight: 6,
+        ladderRank: 13,
+        virtueA: { name: '仁慈', desc: '能真誠接納自我與他人的處境，不因比較或匱乏感而陷入暗自糾結。' },
+        virtueB: { name: '望（神學美德）', desc: '相信自身與未來皆有美好的可能，無須透過與他人比較來確認自身價值。' },
+        tendencyDesc: '你的內心細膩而敏感，對於「誰更受重視」、「誰真正理解誰」或人際間微妙的高低差距特別有感。你渴望獨特且排他的深刻理解，因此當感覺自己被比下去、不被理解或捲入微妙的三角張力時，內心容易泛起強烈的酸楚與防備。'
+      },
+      pride: {
+        key: 'pride',
+        name: '傲慢',
+        en: 'Pride',
+        weight: 7,
+        ladderRank: 14,
+        virtueA: { name: '謙遜', desc: '能放下以自我為中心的優越感，看見他人的價值並平視每一段關係。' },
+        virtueB: { name: '愛（神學美德）', desc: '能走出自我的孤島，以無私與共感接納他人的不完美，位於階梯最頂端。' },
+        tendencyDesc: '你擁有極強的自我意識、自尊心與精神潔癖。你高度看重自己的原則、才智與主體性，絕不輕易為了迎合他人而委曲求全；然而，當這份自持推到極致時，可能會變成一種居高臨下的審視，覺得世上鮮少有人真正配得上或能理解你的高度。'
+      }
+    };
+
+    // 十四級階梯完整定義
+    const LADDER_STEPS = [
+      { rank: 1, name: '愛', category: '神學美德', type: 'virtue', mirrorSin: 'pride' },
+      { rank: 2, name: '望', category: '神學美德', type: 'virtue', mirrorSin: 'envy' },
+      { rank: 3, name: '信', category: '神學美德', type: 'virtue', mirrorSin: 'wrath' },
+      { rank: 4, name: '明智', category: '樞德', type: 'virtue', mirrorSin: 'sloth' },
+      { rank: 5, name: '正義', category: '樞德', type: 'virtue', mirrorSin: 'greed' },
+      { rank: 6, name: '勇敢', category: '樞德', type: 'virtue', mirrorSin: 'gluttony' },
+      { rank: 7, name: '節制', category: '樞德', type: 'virtue', mirrorSin: 'lust' },
+      { rank: 8, name: '色慾', category: '七罪（最輕）', type: 'sin', sinKey: 'lust' },
+      { rank: 9, name: '暴食', category: '七罪', type: 'sin', sinKey: 'gluttony' },
+      { rank: 10, name: '貪婪', category: '七罪', type: 'sin', sinKey: 'greed' },
+      { rank: 11, name: '怠惰', category: '七罪', type: 'sin', sinKey: 'sloth' },
+      { rank: 12, name: '憤怒', category: '七罪', type: 'sin', sinKey: 'wrath' },
+      { rank: 13, name: '嫉妒', category: '七罪', type: 'sin', sinKey: 'envy' },
+      { rank: 14, name: '傲慢', category: '七罪（最重，諸罪之根）', type: 'sin', sinKey: 'pride' }
+    ];
+
+    // 題庫資料：組別 1（共 7 題，每題 4 選項，每選項總分 T=8，全組各罪總分皆為 32）
+    const QUESTION_BANK = [
+      {
+        group: 1,
+        qNum: 1,
+        question: "你的男/女朋友跟你的國文老師同時落水了，然而你的力量只允許你救一個人，你會先救誰?",
+        options: [
+          { code: "A", text: "我雙手一攤，誰也不救，反正男/女朋友再找就有，我也不缺國文老師。", scores: { lust: 0, gluttony: 0, greed: 0, sloth: 5, wrath: 0, envy: 0, pride: 3 } },
+          { code: "B", text: "當然是先救男/女朋友啊，他/她是我的一切，我不能失去他。", scores: { lust: 4, gluttony: 0, greed: 3, sloth: 0, wrath: 0, envy: 0, pride: 1 } },
+          { code: "C", text: "當然是先救國文老師啊，因為是我把我的男/女朋友推下去的，國文老師竟然下去救，一定要抓回來興師問罪！", scores: { lust: 0, gluttony: 0, greed: 0, sloth: 1, wrath: 3, envy: 0, pride: 4 } },
+          { code: "D", text: "當然是打110啊，這一看必死無疑。不用叫消防隊了，浪費社會資源，反正都是「意外」失足的！", scores: { lust: 0, gluttony: 0, greed: 1, sloth: 3, wrath: 0, envy: 1, pride: 3 } }
+        ]
+      },
+      {
+        group: 1,
+        qNum: 2,
+        question: "某天，你的上級對你說，他傷害了他相好（上級的老公或老婆）請求你去安撫他的相好，你作何感想？",
+        options: [
+          { code: "A", text: "恭敬不如從命，我現在就去，給我五分鐘，包準讓你們倆和好如初。", scores: { lust: 2, gluttony: 0, greed: 0, sloth: 0, wrath: 2, envy: 4, pride: 0 } },
+          { code: "B", text: "不可行啊，再怎麼說您的相好也是我的上級，我不能違背我生而為人的矜持，我辦不到。", scores: { lust: 0, gluttony: 0, greed: 0, sloth: 0, wrath: 1, envy: 3, pride: 4 } },
+          { code: "C", text: "干我⋯（消音），您可以去尋找更加專業的心理輔導師，而不是將這種無關乎我本來工作的業務交給我辦，術業有專攻，請找對人。", scores: { lust: 0, gluttony: 0, greed: 1, sloth: 0, wrath: 4, envy: 3, pride: 0 } },
+          { code: "D", text: "不行啊，我怕您的相好不小心，對就是這麼不小心的愛上了我，這可糟了，您被扣了一頂純綠的大帽，還要付我封口費呢！啊，請您不要小看我的魅力呦！", scores: { lust: 5, gluttony: 0, greed: 0, sloth: 0, wrath: 0, envy: 3, pride: 0 } }
+        ]
+      },
+      {
+        group: 1,
+        qNum: 3,
+        question: "我認為精神世界的滿足是愛情中最重要的事。",
+        options: [
+          { code: "A", text: "是，如果一段關係不能帶給我精神上的滿足，不要也罷。", scores: { lust: 1, gluttony: 0, greed: 0, sloth: 3, wrath: 2, envy: 0, pride: 2 } },
+          { code: "B", text: "不是，一段關係不只有精神上的完滿，更要能夠在這個世界共同生活，即使不能共享價值實現之快樂，也可以共享別的快樂。", scores: { lust: 2, gluttony: 3, greed: 3, sloth: 0, wrath: 0, envy: 0, pride: 0 } },
+          { code: "C", text: "我認為我找不到一個可以理解我價值以及可以共享那感情的人。", scores: { lust: 0, gluttony: 1, greed: 0, sloth: 0, wrath: 0, envy: 3, pride: 4 } },
+          { code: "D", text: "我覺得「精神世界的滿足」是一種謬論，精神世界是不可能滿足的，這個提問本身並不成立。", scores: { lust: 0, gluttony: 1, greed: 2, sloth: 5, wrath: 0, envy: 0, pride: 0 } }
+        ]
+      },
+      {
+        group: 1,
+        qNum: 4,
+        question: "我認為我無法與比我笨的人交往。",
+        options: [
+          { code: "A", text: "是，愚蠢不是罪，但是我無法忍受。", scores: { lust: 0, gluttony: 1, greed: 0, sloth: 0, wrath: 5, envy: 0, pride: 2 } },
+          { code: "B", text: "不是，除了知識以外還有更多個人特質是不能以「聰明」或「笨」來概括的。", scores: { lust: 1, gluttony: 2, greed: 5, sloth: 0, wrath: 0, envy: 0, pride: 0 } },
+          { code: "C", text: "我就是笨的那個。", scores: { lust: 0, gluttony: 2, greed: 0, sloth: 4, wrath: 0, envy: 2, pride: 0 } },
+          { code: "D", text: "只要那人對我而言是真正的真愛，就算智力跟藍綠菌一樣也可以。", scores: { lust: 4, gluttony: 2, greed: 2, sloth: 0, wrath: 0, envy: 0, pride: 0 } }
+        ]
+      },
+      {
+        group: 1,
+        qNum: 5,
+        question: "我認為我的交往對象若是兩人對話常常不在同一個頻率上就應該要分開。",
+        options: [
+          { code: "A", text: "是，無法溝通何以有情。", scores: { lust: 0, gluttony: 1, greed: 0, sloth: 0, wrath: 2, envy: 3, pride: 2 } },
+          { code: "B", text: "不是，這是可以慢慢修正的，對方只是還在摸索與我對話的方式，要有耐心。", scores: { lust: 2, gluttony: 3, greed: 3, sloth: 0, wrath: 0, envy: 0, pride: 0 } },
+          { code: "C", text: "我瞧不起聽不懂我說什麼的人，遑論交往。", scores: { lust: 0, gluttony: 0, greed: 0, sloth: 2, wrath: 6, envy: 0, pride: 0 } },
+          { code: "D", text: "兩人之間的溝通不能完全相互理解，每人對於思想的理解亦是有差異的，我認為「聽不懂」是一種武斷的判斷，不能這樣理解。", scores: { lust: 0, gluttony: 3, greed: 3, sloth: 2, wrath: 0, envy: 0, pride: 0 } }
+        ]
+      },
+      {
+        group: 1,
+        qNum: 6,
+        question: "我認為自己心中的理想大於愛情。",
+        options: [
+          { code: "A", text: "是的，我自己的理想才能陪我走得最遠。", scores: { lust: 0, gluttony: 0, greed: 5, sloth: 2, wrath: 0, envy: 0, pride: 1 } },
+          { code: "B", text: "不是，若是對方可以陪伴我一生並使我幸福，我便願意放棄那理想。", scores: { lust: 0, gluttony: 4, greed: 4, sloth: 0, wrath: 0, envy: 0, pride: 0 } },
+          { code: "C", text: "理想與愛情當真不可兼得？那只是這個人無法理解我的理想，去找下一個可以理解我的人就好。", scores: { lust: 0, gluttony: 3, greed: 0, sloth: 0, wrath: 0, envy: 0, pride: 5 } },
+          { code: "D", text: "我的理想就是找到理想的愛情。", scores: { lust: 6, gluttony: 2, greed: 0, sloth: 0, wrath: 0, envy: 0, pride: 0 } }
+        ]
+      },
+      {
+        group: 1,
+        qNum: 7,
+        question: "我覺得喜歡年紀比自己小很多的那群人是正確的。",
+        options: [
+          { code: "A", text: "蛤？那當真不是變態？", scores: { lust: 0, gluttony: 0, greed: 0, sloth: 0, wrath: 4, envy: 4, pride: 0 } },
+          { code: "B", text: "每人皆可選擇自己的喜好，不要違法就好。", scores: { lust: 5, gluttony: 3, greed: 0, sloth: 0, wrath: 0, envy: 0, pride: 0 } },
+          { code: "C", text: "我覺得年紀相差太大會有代溝。", scores: { lust: 0, gluttony: 1, greed: 0, sloth: 5, wrath: 0, envy: 2, pride: 0 } },
+          { code: "D", text: "嚴厲斥責！！！", scores: { lust: 0, gluttony: 0, greed: 0, sloth: 0, wrath: 3, envy: 4, pride: 1 } }
+        ]
+      }
+    ];
+
+    // ==========================================
+    // 2. 狀態管理變數
+    // ==========================================
+    let activeQuestions = [];
+    let currentIndex = 0;
+    let userAnswers = []; // 存放每題選中的 option index (對應 activeQuestions[i].options)
+    const T_VALUE = 8; // 每選項固定總分
+
+    // ==========================================
+    // 3. 工具函式與初始化
+    // ==========================================
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function prepareQuizQuestions() {
+      const shouldShuffle = document.getElementById('shuffleToggle').checked;
+      let cloned = JSON.parse(JSON.stringify(QUESTION_BANK));
+      if (shouldShuffle) {
+        cloned = shuffleArray(cloned);
+        cloned.forEach(q => {
+          q.options = shuffleArray(q.options);
+        });
+      }
+      return cloned;
+    }
+
+    function startQuiz() {
+      activeQuestions = prepareQuizQuestions();
+      currentIndex = 0;
+      userAnswers = new Array(activeQuestions.length).fill(null);
+
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('resultScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+
+      renderCurrentQuestion();
+    }
+
+    function restartQuiz() {
+      document.getElementById('resultScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('startScreen').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // 4. 作答畫面渲染與互動
+    // ==========================================
+    function renderCurrentQuestion() {
+      const q = activeQuestions[currentIndex];
+      const total = activeQuestions.length;
+      const showDebug = document.getElementById('debugScoreToggle').checked;
+
+      document.getElementById('questionGroupBadge').textContent = `第 ${currentIndex + 1} / ${total} 題（原題號：${q.group}-${q.qNum}）`;
+      document.getElementById('progressBar').style.width = `${((currentIndex + 1) / total) * 100}%`;
+      document.getElementById('questionText').textContent = q.question;
+
+      const container = document.getElementById('optionsContainer');
+      container.innerHTML = '';
+
+      const displayLabels = ['A', 'B', 'C', 'D'];
+
+      q.options.forEach((opt, idx) => {
+        const isSelected = userAnswers[currentIndex] === idx;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `option-btn w-full text-left p-4 sm:p-5 rounded-xl flex flex-col gap-2 ${isSelected ? 'selected' : 'bg-gray-900/60'}`;
+        btn.onclick = () => selectOption(idx);
+
+        // 組裝除錯配分標籤
+        let scoreTagsHtml = '';
+        if (showDebug) {
+          const tags = SIN_KEYS
+            .filter(k => opt.scores[k] > 0)
+            .map(k => `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px]">${SIN_INFO[k].name} +${opt.scores[k]}</span>`)
+            .join('');
+          scoreTagsHtml = `<div class="flex flex-wrap gap-1.5 pt-1 border-t border-gray-800 text-xs text-gray-400">
+            <span class="text-gray-500">[原選項 ${opt.code}] 配分：</span>${tags}
+          </div>`;
+        }
+
+        btn.innerHTML = `
+          <div class="flex items-start gap-3.5">
+            <span class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm ${isSelected ? 'bg-amber-500 text-gray-950' : 'bg-gray-800 text-amber-400'}">
+              ${displayLabels[idx]}
+            </span>
+            <span class="text-gray-100 text-sm sm:text-base leading-relaxed">${opt.text}</span>
+          </div>
+          ${scoreTagsHtml}
+        `;
+        container.appendChild(btn);
+      });
+
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.disabled = userAnswers[currentIndex] === null;
+      nextBtn.textContent = currentIndex === total - 1 ? '查看測驗結果 ✨' : '下一題 →';
+    }
+
+    function selectOption(optIdx) {
+      userAnswers[currentIndex] = optIdx;
+      renderCurrentQuestion();
+
+      // 短暫延遲後自動跳下一題（或最後一題進入結果頁）
+      setTimeout(() => {
+        if (currentIndex < activeQuestions.length - 1) {
+          currentIndex++;
+          renderCurrentQuestion();
+        } else {
+          showResults();
+        }
+      }, 240);
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (userAnswers[currentIndex] === null) return;
+      if (currentIndex < activeQuestions.length - 1) {
+        currentIndex++;
+        renderCurrentQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // 快速隨機模擬作答
+    function simulateRandomQuiz() {
+      activeQuestions = prepareQuizQuestions();
+      userAnswers = activeQuestions.map(q => Math.floor(Math.random() * q.options.length));
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.add('hidden');
+      showResults();
+    }
+
+    function updateMappingMode() {
+      if (!document.getElementById('resultScreen').classList.contains('hidden')) {
+        showResults();
+      }
+    }
+
+    // ==========================================
+    // 5. 計分與結果判定引擎（最高分罪行 + 並列輸出）
+    // ==========================================
+    function showResults() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('resultScreen').classList.remove('hidden');
+
+      const N = activeQuestions.length; // 7 題
+      const totalPossibleSum = N * T_VALUE; // 7 * 8 = 56 分
+
+      // 1. 計算各罪得分
+      const totals = { lust: 0, gluttony: 0, greed: 0, sloth: 0, wrath: 0, envy: 0, pride: 0 };
+      activeQuestions.forEach((q, qIdx) => {
+        const chosenOpt = q.options[userAnswers[qIdx]];
+        SIN_KEYS.forEach(k => {
+          totals[k] += chosenOpt.scores[k];
+        });
+      });
+
+      // 2. 找出最高分與所有並列最高分的罪行
+      const maxScore = Math.max(...SIN_KEYS.map(k => totals[k]));
+      const topSins = SIN_KEYS.filter(k => totals[k] === maxScore);
+
+      // 3. 找出最低分與所有並列最低分的罪行（對應相對美德）
+      const minScore = Math.min(...SIN_KEYS.map(k => totals[k]));
+      const lowestSins = SIN_KEYS.filter(k => totals[k] === minScore);
+
+      // 4. 計算背離指數 (Departure Index)
+      // I = Σ (w * s), Index = (I - N*T) / (6 * N * T) * 100
+      let weightedSum = 0;
+      SIN_KEYS.forEach(k => {
+        weightedSum += SIN_INFO[k].weight * totals[k];
+      });
+      const departureIndex = ((weightedSum - totalPossibleSum) / (6 * totalPossibleSum)) * 100;
+
+      // 5. 渲染最高罪行區塊（支援單一或並列）
+      const isTiedTop = topSins.length > 1;
+      document.getElementById('topSinScoreBadge').textContent =
+        isTiedTop ? `並列最高分：各 ${maxScore} 分（佔總分 ${((maxScore / totalPossibleSum) * 100).toFixed(1)}%）`
+                  : `得分：${maxScore} / ${totalPossibleSum} 分（佔比 ${((maxScore / totalPossibleSum) * 100).toFixed(1)}%）`;
+
+      document.getElementById('topSinTitle').textContent =
+        topSins.map(k => `【${SIN_INFO[k].name} ${SIN_INFO[k].en}】`).join(' ＆ ');
+
+      const descContainer = document.getElementById('topSinDescriptions');
+      descContainer.innerHTML = topSins.map(k => `
+        <div class="bg-gray-950/60 border border-red-900/40 rounded-xl p-4">
+          <div class="font-bold text-red-300 mb-1 serif text-lg">▸ 關於「${SIN_INFO[k].name}」傾向（階梯第 ${SIN_INFO[k].ladderRank} 級，權重 ${SIN_INFO[k].weight}）</div>
+          <p class="text-gray-300 text-sm leading-relaxed">${SIN_INFO[k].tendencyDesc}</p>
+        </div>
+      `).join('');
+
+      // 6. 渲染最低分對應之相對美德
+      const mappingMode = document.getElementById('mappingModeSelect').value; // 'A' or 'B'
+      document.getElementById('lowestSinScoreBadge').textContent = `最低分罪行：${lowestSins.map(k => SIN_INFO[k].name).join('、')}（${minScore} 分）`;
+
+      const virtueNames = lowestSins.map(k => {
+        const vObj = mappingMode === 'A' ? SIN_INFO[k].virtueA : SIN_INFO[k].virtueB;
+        return `【${vObj.name}】（對應最低分：${SIN_INFO[k].name}）`;
+      }).join(' ＆ ');
+
+      document.getElementById('virtueTitle').textContent = virtueNames;
+      document.getElementById('virtueDescription').innerHTML =
+        `在本次測驗中，你相對最不受<strong>「${lowestSins.map(k => SIN_INFO[k].name).join('、')}」</strong>的傾向影響。` +
+        lowestSins.map(k => {
+          const vObj = mappingMode === 'A' ? SIN_INFO[k].virtueA : SIN_INFO[k].virtueB;
+          return `<div class="mt-2 text-xs sm:text-sm text-emerald-200/90 bg-emerald-950/40 border border-emerald-800/40 rounded-lg p-3"><strong>• ${vObj.name}：</strong>${vObj.desc}</div>`;
+        }).join('');
+
+      // 7. 渲染背離指數
+      document.getElementById('departureIndexValue').textContent = departureIndex.toFixed(1);
+      document.getElementById('departureBar').style.width = `${Math.max(2, Math.min(100, departureIndex))}%`;
+      document.getElementById('rawWeightedInfo').textContent = `加權總和 I = ${weightedSum} (範圍 ${totalPossibleSum} ~ ${7 * totalPossibleSum})`;
+
+      // 8. 渲染十四級階梯直式剖面圖
+      renderLadderProfile(totals, topSins, lowestSins, maxScore, mappingMode);
+
+      // 9. 渲染作答明細
+      renderAnswerReview();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderLadderProfile(totals, topSins, lowestSins, maxScore, mappingMode) {
+      const container = document.getElementById('ladderContainer');
+      container.innerHTML = '';
+
+      // 計算長條圖最大刻度（至少 20 分，讓視覺比例清晰）
+      const scaleMax = Math.max(20, maxScore + 2);
+
+      LADDER_STEPS.forEach(step => {
+        if (step.type === 'virtue') {
+          // 判斷是否為最低分罪行所對應的美德
+          let isHighlightedVirtue = false;
+          let matchedSinName = '';
+
+          if (mappingMode === 'B') {
+            // 做法B：依階梯鏡像配對
+            if (lowestSins.includes(step.mirrorSin)) {
+              isHighlightedVirtue = true;
+              matchedSinName = SIN_INFO[step.mirrorSin].name;
+            }
+          } else {
+            // 做法A：傳統對應美德（標示在旁邊輔助說明）
+            lowestSins.forEach(sinKey => {
+              if (SIN_INFO[sinKey].virtueA.name.includes(step.name)) {
+                isHighlightedVirtue = true;
+                matchedSinName = SIN_INFO[sinKey].name;
+              }
+            });
+          }
+
+          const row = document.createElement('div');
+          row.className = `flex items-center justify-between px-3.5 py-2 rounded-lg text-xs border ${
+            isHighlightedVirtue
+              ? 'bg-emerald-950/60 border-emerald-500/60 text-emerald-200 font-semibold'
+              : 'bg-gray-900/40 border-gray-800/70 text-gray-400'
+          }`;
+          row.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="font-mono text-[11px] w-6 text-center px-1 py-0.5 rounded bg-gray-800 text-amber-400/90">#${step.rank}</span>
+              <span class="serif text-sm text-gray-200">${step.name}</span>
+              <span class="text-[11px] text-gray-500">（${step.category}）</span>
+            </div>
+            <div>
+              ${isHighlightedVirtue ? `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px]">★ 相對美德（對應${matchedSinName}最低）</span>` : `<span class="text-[11px] text-gray-600">美德階層</span>`}
+            </div>
+          `;
+          container.appendChild(row);
+        } else {
+          // 七罪階層（#8 色慾 ~ #14 傲慢）
+          const sinKey = step.sinKey;
+          const score = totals[sinKey];
+          const isTop = topSins.includes(sinKey);
+          const isLowest = lowestSins.includes(sinKey);
+          const widthPct = Math.round((score / scaleMax) * 100);
+          const mappedVirtueName = mappingMode === 'A' ? SIN_INFO[sinKey].virtueA.name : SIN_INFO[sinKey].virtueB.name;
+
+          const row = document.createElement('div');
+          row.className = `p-3 rounded-xl border transition ${
+            isTop
+              ? 'bg-red-950/50 border-red-500/70 shadow-md shadow-red-950/30'
+              : isLowest
+              ? 'bg-emerald-950/30 border-emerald-500/50'
+              : 'bg-gray-900/80 border-gray-800'
+          }`;
+
+          row.innerHTML = `
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5 text-xs">
+              <div class="flex items-center gap-2.5">
+                <span class="font-mono text-[11px] w-6 text-center px-1 py-0.5 rounded bg-gray-800 text-gray-300">#${step.rank}</span>
+                <span class="serif font-bold text-sm ${isTop ? 'text-red-300' : isLowest ? 'text-emerald-300' : 'text-gray-200'}">${step.name}</span>
+                <span class="text-[11px] text-gray-500">權重 w=${SIN_INFO[sinKey].weight}</span>
+                ${isTop ? `<span class="px-2 py-0.5 rounded bg-red-500 text-gray-950 font-bold text-[11px]">★ 最高突出罪行</span>` : ''}
+                ${isLowest ? `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px]">✦ 最低分 → 對應美德：${mappedVirtueName}</span>` : ''}
+              </div>
+              <div class="font-mono font-bold text-sm ${isTop ? 'text-red-300' : isLowest ? 'text-emerald-300' : 'text-gray-300'}">
+                ${score} 分 <span class="text-[11px] font-normal text-gray-500">/ 題庫滿分 32</span>
+              </div>
+            </div>
+            <div class="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden">
+              <div class="step-bar h-full rounded-full ${
+                isTop ? 'bg-gradient-to-r from-red-600 to-amber-500' : isLowest ? 'bg-emerald-500' : 'bg-amber-600/70'
+              }" style="width: ${Math.max(3, widthPct)}%"></div>
+            </div>
+          `;
+          container.appendChild(row);
+        }
+      });
+    }
+
+    function renderAnswerReview() {
+      const container = document.getElementById('answerReviewList');
+      container.innerHTML = activeQuestions.map((q, idx) => {
+        const chosen = q.options[userAnswers[idx]];
+        const scoreText = SIN_KEYS
+          .filter(k => chosen.scores[k] > 0)
+          .map(k => `${SIN_INFO[k].name} +${chosen.scores[k]}`)
+          .join('、');
+        return `
+          <div class="p-3 rounded-lg bg-gray-950/60 border border-gray-800/80">
+            <div class="font-semibold text-amber-400 mb-1">Q${idx + 1}（原題號 ${q.group}-${q.qNum}）：${q.question}</div>
+            <div class="text-gray-300 mb-1">你的選擇（原選項 ${chosen.code}）：${chosen.text}</div>
+            <div class="text-gray-500 font-mono">計分明細：${scoreText}（合計 ${T_VALUE} 分）</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==========================================
+    // 6. 題庫驗證器 (Inspector)
+    // ==========================================
+    function toggleInspector() {
+      const panel = document.getElementById('inspectorPanel');
+      panel.classList.toggle('hidden');
+      if (!panel.classList.contains('hidden')) {
+        renderInspectorTable();
+        panel.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function renderInspectorTable() {
+      const tbody = document.getElementById('inspectorTableBody');
+      tbody.innerHTML = '';
+
+      const colTotals = { lust: 0, gluttony: 0, greed: 0, sloth: 0, wrath: 0, envy: 0, pride: 0 };
+      let allOptionsValidT = true;
+
+      QUESTION_BANK.forEach(q => {
+        q.options.forEach(opt => {
+          let rowSum = 0;
+          SIN_KEYS.forEach(k => {
+            rowSum += opt.scores[k];
+            colTotals[k] += opt.scores[k];
+          });
+          if (rowSum !== T_VALUE) allOptionsValidT = false;
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-900/50';
+          tr.innerHTML = `
+            <td class="p-2 font-mono text-amber-400">${q.group}-${q.qNum}-${opt.code}</td>
+            <td class="p-2 text-gray-300 max-w-xs truncate" title="${opt.text}">${opt.text}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.lust}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.gluttony}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.greed}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.sloth}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.wrath}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.envy}</td>
+            <td class="p-2 text-center font-mono">${opt.scores.pride}</td>
+            <td class="p-2 text-center font-mono font-bold ${rowSum === T_VALUE ? 'text-emerald-400' : 'text-red-400'}">${rowSum}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+
+      // 加入組1小計列
+      const allColsEqual32 = SIN_KEYS.every(k => colTotals[k] === 32);
+      const summaryTr = document.createElement('tr');
+      summaryTr.className = 'bg-amber-950/40 font-bold text-amber-300 border-t-2 border-amber-600/50';
+      summaryTr.innerHTML = `
+        <td class="p-2" colspan="2">組1小計（28 個選項各罪加總，應皆為 32）</td>
+        <td class="p-2 text-center font-mono">${colTotals.lust}</td>
+        <td class="p-2 text-center font-mono">${colTotals.gluttony}</td>
+        <td class="p-2 text-center font-mono">${colTotals.greed}</td>
+        <td class="p-2 text-center font-mono">${colTotals.sloth}</td>
+        <td class="p-2 text-center font-mono">${colTotals.wrath}</td>
+        <td class="p-2 text-center font-mono">${colTotals.envy}</td>
+        <td class="p-2 text-center font-mono">${colTotals.pride}</td>
+        <td class="p-2 text-center font-mono text-emerald-400">${ 32 * 7 }</td>
+      `;
+      tbody.appendChild(summaryTr);
+
+      const summaryBox = document.getElementById('inspectorSummary');
+      summaryBox.innerHTML = `
+        <div class="flex flex-wrap gap-3 text-xs">
+          <span class="px-3 py-1.5 rounded-lg ${allOptionsValidT ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-red-950 text-red-300 border border-red-700'}">
+            ✓ 選項固定總分檢查：${allOptionsValidT ? '28 個選項總分皆為 T = 8（通過）' : '有選項總分不為 8！'}
+          </span>
+          <span class="px-3 py-1.5 rounded-lg ${allColsEqual32 ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-red-950 text-red-300 border border-red-700'}">
+            ✓ 七罪題庫總分平衡檢查：${allColsEqual32 ? '七種罪總分皆為 32 分（完全平衡）' : '七罪總分不相等！'}
+          </span>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
